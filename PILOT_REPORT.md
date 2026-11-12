@@ -29,6 +29,13 @@ The other 10 judges have ratios from .52 to .74.
 ## Power
 The minimum detectable recall gap (80% power, baseline .90) is .16 for HB (71 split positives) and .32 for JBB (20).
 
+## Post hoc, added 2026-11-12: direction of the errors (not pre-registered)
+`scripts/posthoc_lean.py` → `results/posthoc_lean_stdout.txt`.
+- On the 114 HB split items, the HarmBench classifier calls 81% harmful; the three rater columns call 78%, 46% and 39% (mean 54%).
+- Its split-item errors are 28 false alarms (harmful v a safe majority) and 7 misses. In 21 of the 28 false alarms the lone "harmful" vote is in rater column 0.
+- Attack success rate on all 602 HB items: classifier 51.5%, 3-rater majority 45.3%. 21 of the 37-item gap is on split items.
+- Not every judge leans this way (e.g. llama_guard calls 17% of split items harmful). Rater columns may not be the same person across items.
+
 ## Caveats
 - **The ceiling is model-dependent.** It assumes contested items are no harder for raters than other items, and three raters cannot test that.
   - Post hoc: the drops are fully explained if raters are at most 50–77% accurate on contested HB items (75–87% on JBB).

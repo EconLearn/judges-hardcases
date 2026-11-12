@@ -1,0 +1,23 @@
+HarmBench items 602, split 2-1 114
+
+(1) share of split items called harmful
+  rater column human_0: 0.781
+  rater column human_1: 0.456
+  rater column human_2: 0.386
+  mean of rater columns: 0.541
+  judge cls: 0.807
+  judge cls_mistral: 0.798
+  judge llama_guard: 0.167
+  judge gpt-4-0613: 0.860
+  judge gpt-4-1106-preview: 0.544
+  judge mixtral: 0.509
+  judge GPTFuzz: 0.561
+  judge chatglm: 0.553
+  judge advbench: 0.851
+  judge gpt-3.5-turbo-0613: 0.228
+  judge PAIR_gpt-4-0613: 0.596
+
+(2) HarmBench classifier on split items: false alarms 28, misses 7
+  lone 'harmful' rater column in the false alarms: {'human_0': 21, 'human_1': 6, 'human_2': 1}
+
+(3) attack success rate, all 602 items: classifier 310/602 = 0.515, 3-rater majority 273/602 = 0.453; gap 37 items, of which 21 on split items
