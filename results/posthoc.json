@@ -1,0 +1,81 @@
+{
+ "HB": {
+  "cls": {
+   "ratio_unstrat_lo": 0.6511900275951855,
+   "ratio_unstrat_hi": 0.8336525855488757,
+   "break_even_split_rater_acc": 0.7702089795925834
+  },
+  "cls_mistral": {
+   "ratio_unstrat_lo": 0.6396460315590328,
+   "ratio_unstrat_hi": 0.8248642663261698,
+   "break_even_split_rater_acc": 0.7623453610251292
+  },
+  "llama_guard": {
+   "ratio_unstrat_lo": 0.3368615419721078,
+   "ratio_unstrat_hi": 0.5303914925939502,
+   "break_even_split_rater_acc": 0.49528842050957433
+  },
+  "gpt-4-0613": {
+   "ratio_unstrat_lo": 0.648491905200197,
+   "ratio_unstrat_hi": 0.830689058691168,
+   "break_even_split_rater_acc": 0.7702089795925834
+  },
+  "gpt-4-1106-preview": {
+   "ratio_unstrat_lo": 0.6508760070326832,
+   "ratio_unstrat_hi": 0.8333612680598728,
+   "break_even_split_rater_acc": 0.7702089795925834
+  },
+  "mixtral": {
+   "ratio_unstrat_lo": 0.5522787966867286,
+   "ratio_unstrat_hi": 0.7433098767581937,
+   "break_even_split_rater_acc": 0.6901505066201756
+  },
+  "GPTFuzz": {
+   "ratio_unstrat_lo": 0.42001132181014117,
+   "ratio_unstrat_hi": 0.6180692831373935,
+   "break_even_split_rater_acc": 0.5732495903026005
+  },
+  "chatglm": {
+   "ratio_unstrat_lo": 0.4655832810807002,
+   "ratio_unstrat_hi": 0.6602907346505499,
+   "break_even_split_rater_acc": 0.6156122144991276
+  },
+  "advbench": {
+   "ratio_unstrat_lo": 0.5236421436689495,
+   "ratio_unstrat_hi": 0.7150829194129458,
+   "break_even_split_rater_acc": 0.6655538450654315
+  },
+  "gpt-3.5-turbo-0613": {
+   "ratio_unstrat_lo": 0.41760721063807293,
+   "ratio_unstrat_hi": 0.6146432485647373,
+   "break_even_split_rater_acc": 0.5732495903026005
+  },
+  "PAIR_gpt-4-0613": {
+   "ratio_unstrat_lo": 0.5891719297289775,
+   "ratio_unstrat_hi": 0.7818024028229742,
+   "break_even_split_rater_acc": 0.722542161215519
+  }
+ },
+ "JBB": {
+  "harmbench_cf": {
+   "ratio_unstrat_lo": 0.6214559737386353,
+   "ratio_unstrat_hi": 0.9324708486260243,
+   "break_even_split_rater_acc": 0.871682866880858
+  },
+  "gpt4_cf": {
+   "ratio_unstrat_lo": 0.5840627399385797,
+   "ratio_unstrat_hi": 0.9105726169090754,
+   "break_even_split_rater_acc": 0.8493255918679357
+  },
+  "llamaguard2_cf": {
+   "ratio_unstrat_lo": 0.5510826306349164,
+   "ratio_unstrat_hi": 0.8856102419832859,
+   "break_even_split_rater_acc": 0.8262446865476278
+  },
+  "llama3_cf": {
+   "ratio_unstrat_lo": 0.4465007163221765,
+   "ratio_unstrat_hi": 0.802872466625842,
+   "break_even_split_rater_acc": 0.753168926621936
+  }
+ }
+}

@@ -1,0 +1,19 @@
+
+HB: p bootstrap 95% CI [0.920,0.944]
+  cls                  ratio CI(unstrat) [0.65,0.83]  break-even split rater acc 0.770
+  cls_mistral          ratio CI(unstrat) [0.64,0.82]  break-even split rater acc 0.762
+  llama_guard          ratio CI(unstrat) [0.34,0.53]  break-even split rater acc 0.495
+  gpt-4-0613           ratio CI(unstrat) [0.65,0.83]  break-even split rater acc 0.770
+  gpt-4-1106-preview   ratio CI(unstrat) [0.65,0.83]  break-even split rater acc 0.770
+  mixtral              ratio CI(unstrat) [0.55,0.74]  break-even split rater acc 0.690
+  GPTFuzz              ratio CI(unstrat) [0.42,0.62]  break-even split rater acc 0.573
+  chatglm              ratio CI(unstrat) [0.47,0.66]  break-even split rater acc 0.616
+  advbench             ratio CI(unstrat) [0.52,0.72]  break-even split rater acc 0.666
+  gpt-3.5-turbo-0613   ratio CI(unstrat) [0.42,0.61]  break-even split rater acc 0.573
+  PAIR_gpt-4-0613      ratio CI(unstrat) [0.59,0.78]  break-even split rater acc 0.723
+
+JBB: p bootstrap 95% CI [0.948,0.974]
+  harmbench_cf         ratio CI(unstrat) [0.62,0.93]  break-even split rater acc 0.872
+  gpt4_cf              ratio CI(unstrat) [0.58,0.91]  break-even split rater acc 0.849
+  llamaguard2_cf       ratio CI(unstrat) [0.55,0.89]  break-even split rater acc 0.826
+  llama3_cf            ratio CI(unstrat) [0.45,0.80]  break-even split rater acc 0.753
