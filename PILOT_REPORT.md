@@ -19,7 +19,7 @@ All numbers are MEASURED on public data, following `PREREG.md` (frozen 2026-11-1
 
 The other 10 judges have ratios from .52 to .74.
 - Accuracy drops on split items for all 15 judges. The bootstrap CI excludes 0 for 14 of them; the exception is JBB harmbench_cf.
-- The loss is mainly in **specificity** (HB median −.34, versus −.10 for sensitivity): judges flag items that one rater called harmful.
+- The loss is mainly in **specificity** (HB median −.41, versus −.10 for sensitivity): judges flag items that one rater called harmful.
 - Every ratio CI is below 1, so the pre-registered rule says "below the uniform-noise ceiling".
 
 ## Negative control (1,000 stratum-blind simulated judges)
