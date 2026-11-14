@@ -1,6 +1,6 @@
 # Pilot report: safety judges on contested items
 
-All numbers are MEASURED on public data, following `PREREG.md` (frozen 2026-11-11 23:37 UTC, sha256 `d69ed3b4…`). Judge outputs are as released by the datasets. Code is in `scripts/`; full tables are in `results/`.
+All numbers are MEASURED on public data, following `PREREG.md` (written 2026-11-11 23:37 UTC, sha256 `d69ed3b4…`). `PREREG.md` was committed in the same commit as these results (`ceac9fa`), so the repository cannot show it came first. Judge outputs are as released by the datasets. Code is in `scripts/`; full tables are in `results/`.
 
 ## Counts (reference = 3-rater majority)
 | | N | unanimous +/− | split +/− | p (rater acc.) |
@@ -20,7 +20,7 @@ All numbers are MEASURED on public data, following `PREREG.md` (frozen 2026-11-1
 The other 10 judges have ratios from .52 to .74.
 - Accuracy drops on split items for all 15 judges. The bootstrap CI excludes 0 for 14 of them; the exception is JBB harmbench_cf.
 - The loss is mainly in **specificity** (HB median −.41, versus −.10 for sensitivity): judges flag items that one rater called harmful.
-- Every ratio CI is below 1, so the pre-registered rule says "below the uniform-noise ceiling".
+- Every ratio CI is below 1, so the plan's rule says "below the uniform-noise ceiling". That ceiling assumes all items are equally hard to grade, which is unlikely for contested items (see Caveats), so this is not evidence of judge failure.
 
 ## Negative control (1,000 stratum-blind simulated judges)
 - HB: flag rates are 4–6% for accuracy and 4–9% for sensitivity/specificity, so the test is calibrated.
@@ -39,11 +39,24 @@ The minimum detectable recall gap (80% power, baseline .90) is .16 for HB (71 sp
 ## Caveats
 - **The ceiling is model-dependent.** It assumes contested items are no harder for raters than other items, and three raters cannot test that.
   - Post hoc: the drops are fully explained if raters are at most 50–77% accurate on contested HB items (75–87% on JBB).
-  - Post hoc: the raters themselves agree with the 2-1 label 67% of the time on split items; the best judges score 69%.
 - JBB has only 33 split items.
 - HB's paired generations: a cluster bootstrap gives the same CIs.
 - The prereg miscounted the judges as 16; there are 15.
 - The stratified bootstrap held p fixed. A post hoc unstratified bootstrap gives the same conclusions.
 
+## Changes after review (Yang Gao, 13 Nov 2026)
+- The summary now leads with the main limitation: the uniform-noise ceiling is too high for contested items.
+- Removed a post-hoc figure (raters agree with the 2-1 label 67% of the time on split items). With three raters, two
+  always form the majority, so that number carries no information.
+- Stated that `PREREG.md` and the results share a commit.
+- Noted that 21 of the 28 classifier false alarms had their lone "harmful" vote in rater column 0, so one strict rater
+  may drive the over-flagging pattern. Study 2 estimates per-rater accuracy (Dawid-Skene) on fresh, identified raters.
+
 ## Summary (MEASURED)
-In a pre-registered pilot on 902 public items each labelled by three humans, all 15 released safety judges agreed less often with the majority when raters split 2-1 (e.g. HarmBench classifier 0.96 → 0.69, driven by specificity), staying below a uniform-rater-noise ceiling. With three raters we cannot separate judge failure from genuinely ambiguous items, since raters only ~77% accurate on contested items would explain the whole drop; the proposed denser relabelling would measure exactly this.
+On 902 public items each labelled by three humans, all 15 released safety judges agreed less often with the majority when
+raters split 2-1 (e.g. HarmBench classifier 0.96 to 0.69, driven by specificity). The likeliest explanation we cannot rule
+out is that contested items are hard for raters too: raters only ~77% accurate on contested items would explain the whole
+drop. So the pilot does not show that judges fail; it shows where to look. Most of the HarmBench classifier's false alarms
+are on split items (28 of 46; its precision is 0.85 on all items and 0.92 on unanimous items only), and 21 of those 28
+trace to one rater column. Study 2
+(`STUDY2_PLAN.md`) re-rates these items with five fresh, blind, calibrated raters.
