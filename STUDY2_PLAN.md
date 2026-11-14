@@ -4,6 +4,9 @@ Written 2026-11-14, before any Study 2 rating is collected. This file, `study2/s
 committed on their own, in a commit that contains no Study 2 data. Their sha256 values are in `STUDY2_PLAN.sha256`.
 Any change after the first rating is collected goes in a "Deviations" section of the Study 2 report, never in this file.
 
+**Amendment 1 (14 Nov 2026, before any Study 2 data) changes the item set: see the end of this file. Where its counts
+differ from the sections below, Amendment 1 wins.**
+
 This plan was revised after methods feedback from Yang Gao (13 Nov 2026) on the pilot. The changes it led to are listed
 at the end.
 
@@ -84,3 +87,30 @@ only in the descriptive comparison at the end.
 - The rule for "ambiguous" (3-2) and a 1-5 confidence rating are fixed before data.
 - Per-rater accuracy is estimated with a Dawid-Skene model on the new ratings, because 21 of the 28 pilot false alarms
   had their lone harmful vote in one rater column.
+
+## Amendment 1 (14 Nov 2026, before any Study 2 rating is collected)
+**What changes:** every behavior in HarmBench's `chemical_biological` category is left out of all three sets and out of
+the calibration round. The category comes from HarmBench's `harmbench_behaviors_text_all.csv` (sha256 in
+`data/SHA256SUMS`). Three validation-set IDs were renamed in that file; `select_items.py` maps them by hand, and none of
+them is chemical/biological.
+
+**Why:** our written descriptions of this study say chemical and biological items are excluded, and asking paid raters to
+read synthesis instructions for drugs, chemical weapons or pathogens is a safety risk that the study does not need. The
+first item list (commit `dacd29f`) broke that promise with 10 such items. No rating has been collected, so the list is
+fixed now rather than reported later as a deviation.
+
+**New item set (`study2/items.csv`, 53 items; same seed, same rules on the smaller pool):**
+- Set A, 28 items: 23 false alarms and 5 misses (was 28 and 7).
+- Set B, 15 split-agree items, 12 harmful and 3 safe (re-drawn from the smaller pool).
+- Set C, 10 unanimous controls, 5 harmful and 5 safe (re-drawn).
+- 30 of the 53 items were also on the first list.
+
+**Rules restated for the new counts:**
+- Q1 uses the 23 false alarms and the 5 misses. Q2 uses the 43 contested items (Sets A and B).
+- The Q1 sentences apply when at least 50% of the **23** false alarms are clear-harmful (or clear-safe), i.e. at least
+  12 of 23.
+- With 23 items, a share's 95% interval is about plus or minus 0.20 at worst.
+- The descriptive check on the old rater column now reads: 20 of the 23 false alarms had their lone "harmful" vote in
+  old rater column 0.
+- Ratings: 53 x 5 = 265, plus the calibration round. The cost guess is unchanged ($100-200 with fees).
+- The controls rule (unreliable if the new majority disagrees on more than 1 of 10) is unchanged.

@@ -5,7 +5,17 @@ import sys, os, json, random, csv
 ROOT = sys.argv[1] if len(sys.argv) > 1 else "."
 d = json.load(open(os.path.join(ROOT, "data", "harmbench_text_behaviors_val_set.json")))
 H = ("human_0", "human_1", "human_2")
-items = [(k, i, r) for k, v in sorted(d.items()) for i, r in enumerate(v)]
+# Amendment 1 (before any data): leave out HarmBench's chemical_biological behaviors entirely (category from
+# data/harmbench_behaviors_text_all.csv, sha256 in data/SHA256SUMS).
+cat = {r["BehaviorID"]: r["SemanticCategory"] for r in csv.DictReader(open(os.path.join(ROOT, "data", "harmbench_behaviors_text_all.csv")))}
+# Three validation-set IDs were renamed in the later category file; their categories, checked by hand against it:
+cat.update({"chop_shops_los_angeles_locating": "illegal",           # = los_angeles_chop_shops_list
+            "ddos_code_obfuscation": "cybercrime_intrusion",        # = ddos_code_obfuscation_tools_1/2
+            "password_pin_coercion_dialogue": "not_in_file"})       # no match; a coercion dialogue, not chem/bio
+assert all(k in cat for k in d), "behavior missing from the HarmBench category file"
+EXCLUDE = {"chemical_biological"}
+n_all = sum(len(v) for v in d.values())
+items = [(k, i, r) for k, v in sorted(d.items()) if cat[k] not in EXCLUDE for i, r in enumerate(v)]
 votes = lambda r: sum(int(r[c]) for c in H)
 maj = lambda r: int(votes(r) >= 2)
 rng = random.Random(20261114)
@@ -23,5 +33,6 @@ rows = ([("A_false_alarm", x) for x in fa] + [("A_miss", x) for x in mi] + [("B_
 with open(os.path.join(ROOT, "study2", "items.csv"), "w", newline="") as f:
     w = csv.writer(f); w.writerow(["set", "behavior_key", "generation_index", "old_votes_harmful_of_3", "classifier_cls"])
     for s, (k, i, r) in rows: w.writerow([s, k, i, votes(r), r["cls"]])
+print(f"generations {n_all}, after excluding {sorted(EXCLUDE)}: {len(items)}")
 print(f"split {len(split)}: false alarms {len(fa)}, misses {len(mi)}, agree {len(agree)} ({len(agree_h)} harmful)")
 print(f"selected: A {len(fa)+len(mi)}, B {len(setB)} ({nbh} harmful), C {len(ctrl)}; total {len(rows)}")
