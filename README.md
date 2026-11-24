@@ -14,7 +14,7 @@ not show judge failure. Separating judge error from ambiguous items needs more l
 
 - `PREREG.md`: the pilot's analysis plan, written before the analysis was run. It was committed together with the results
   (commit `ceac9fa`), so its timing cannot be checked from this repository. Study 2's plan was committed on its own first.
-- `STUDY2_PLAN.md`: the plan for fresh, blind ratings of the contested items (sha256 in `STUDY2_PLAN.sha256`).
+- `STUDY2_PLAN.md`: the plan for the held-out-rater test on public multi-rater data (revised 17 Nov; the paid-rating plan was withdrawn before any data). sha256 in `STUDY2_PLAN.sha256`.
 - `PILOT_REPORT.md`: all results, the negative control, power, and caveats.
 - `scripts/analyze.py`, `scripts/posthoc.py`: the analysis. `results/`: their outputs.
 

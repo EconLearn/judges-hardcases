@@ -1,3 +1,137 @@
+# Study 2 plan (revised 17 Nov 2026): held-out raters on contested items, using public multi-rater data
+
+**Status.** The fresh-rating design of 14 Nov 2026 (with Amendment 1) is withdrawn before any data. Prolific told us on
+17 Nov 2026 that study owners must be 18 or older and that a parent's account can't run a study I designed. No Study 2
+rating was collected and no money was spent. The withdrawn text is kept unchanged at the end of this file, and in commits
+`dacd29f` and `2c851e4`.
+
+This revision is committed on its own, before any judge is run on the datasets below and before their labels are
+analysed against anything. So far only the dataset cards and READMEs, the column names and the number of labels per item
+have been looked at. The code (`study2b/`) and its sha256 values go up in a later commit, still before the first judge
+run, and none of it may change the rules here. Any change after the first judge output goes in a "Deviations" section of
+the Study 2 report, never in this file.
+
+## Why the design changed, and what stays the same
+The pilot's open question is unchanged: on items where three raters split 2-1, is a judge wrong, or are the items
+toss-ups? The withdrawn plan answered it with five new paid raters. This plan uses datasets that already have many raters
+per item. In DICES I can copy a three-label benchmark by sampling three raters per item, flag the 2-1 splits, and use all
+the other raters as the fresh panel. Their labels played no part in picking the items, which is the property the paid
+raters were there to give.
+
+Limit, stated up front: DICES and Aegis label harm in conversations in general, not jailbreak success. They test the
+method and the toss-up explanation. They do not test HarmBench's own labels.
+
+## Data (fetched from the source, sha256 recorded in `data/SHA256SUMS`, not redistributed)
+| Dataset | Source | Licence | Items | Labels per item | Rater IDs |
+|---|---|---|---|---|---|
+| DICES-350 | github.com/google-research-datasets/dices-dataset, folder `350` | CC BY 4.0 | 350 conversations | 123, the same raters on every item (43,050 rows) | yes |
+| DICES-990 | same repo, folder `990` | CC BY 4.0 | 990 conversations | 60-70 each, from a pool of about 173 (72,103 rows) | yes |
+| Aegis 1.0 | huggingface.co/datasets/nvidia/Aegis-AI-Content-Safety-Dataset-1.0 | CC BY 4.0 | 11,997 (train + test) | 3 (10,735 items), 4 (1,258) or 5 (4) | no, only label slots `labels_0`..`labels_4` |
+| HarmBench classifier val set, JailbreakBench judge comparison | already in this repo (`fetch_data.sh`) | MIT | 602 and 300 | 3 rater columns | no |
+
+## Label coding (fixed now)
+- **DICES:** a rater's label is `Q_overall`. "Yes" = unsafe, "No" = safe, "Unsure" = missing. Sensitivity analysis:
+  "Unsure" = unsafe. All released raters are used; no rater is removed for disagreeing with others.
+- **Aegis:** a label cell is "safe" if it is exactly `Safe`, and "unsafe" if it names any harm category (cells can list
+  several; any harm category makes it unsafe). A cell that says only `Needs Caution` is missing in the main analysis and
+  unsafe in a sensitivity analysis.
+- **Aegis exclusion:** any item with `Sexual Minor` in any label cell is dropped by its labels before any text is loaded
+  into a judge, and is never read or scored. The count dropped is reported.
+- **HarmBench / JailbreakBench:** as in the pilot (1 = harmful). HarmBench's `chemical_biological` items stay excluded from
+  every analysis that loads text. The Dawid-Skene fit (Q3) uses labels only, so no text is opened.
+
+## Judges (fixed now; exact model revisions and prompts go in `study2b/judges.yaml` before the first run)
+- **Primary on DICES and Aegis:** Llama Guard 3 8B (`meta-llama/Llama-Guard-3-8B`), with its default prompt and
+  category list. It classifies the last assistant turn given the conversation, and its first output token gives
+  safe/unsafe. For Aegis items that are a user message only (`text_type = user_message`), it classifies the prompt.
+- **Exploratory:** the original Llama Guard (`meta-llama/LlamaGuard-7b`), so there's a link to the pilot's `llama_guard`
+  column. Any other judge is added only by a dated amendment before its own run, and it is labelled exploratory.
+- **HarmBench:** the HarmBench classifier stays the primary judge on HarmBench, using the verdicts already released with
+  the dataset. It is not run on DICES or Aegis, because it needs a behaviour string these datasets don't have.
+- Judges run greedy (temperature 0). No judge or other model generates new text beyond its verdict.
+
+## Questions and analysis
+
+### Q1 (main): DICES held-out-rater test
+For each DICES conversation *i* and draw *k* = 1..200 (seed 20261117 + *k*):
+1. Draw 3 raters at random, without replacement, from the raters with a non-missing label on *i*.
+2. The item is **contested** in draw *k* if the 3 split 2-1, and **unanimous** if they agree 3-0.
+3. The **held-out panel** is every other rater with a non-missing label on *i*.
+4. *a_ik* = the share of the held-out panel that agrees with the judge. *p_ik* = the share of distinct held-out rater pairs
+   that agree with each other. Gap *g_ik* = *a_ik* - *p_ik*.
+
+The main statistic for each judge and dataset is G = the average of *g_ik* over all contested (item, draw) pairs. G < 0
+means the judge agrees with the held-out raters less often than they agree with each other. The same statistic on
+unanimous pairs is the comparison group. Draw *k* = 1 alone is also reported, so one concrete three-rater benchmark can be
+inspected.
+
+Interval: a 95% percentile bootstrap over conversations (10,000 resamples; each resampled item keeps all its draws and
+raters). Because DICES-350 has the same 123 raters on every item, a second interval resamples items and raters
+independently (two-way bootstrap). The wider of the two is used for the decision rule.
+
+**Decision rule (equivalence margin 0.05, fixed now):**
+- Whole interval below -0.05: "On contested items, this judge agrees with held-out raters less often than they agree with
+  each other. Its errors there go beyond the items being toss-ups."
+- Whole interval inside [-0.05, +0.05]: "This judge agrees with held-out raters about as often as they agree with each
+  other. The drop on split items is consistent with toss-up items, and three labels per item are too few to grade judges
+  on them."
+- Whole interval above +0.05: "This judge agrees with held-out raters more often than they agree with each other. The
+  three-label split overstates its problem."
+- Anything else: inconclusive, and reported as such, not as evidence of equivalence.
+
+Also reported for each judge: pilot-style agreement with the three-rater majority on unanimous v contested items, and the
+judge's unsafe rate on contested items next to the held-out panel's unsafe rate (direction of any lean; descriptive).
+
+**Precision check before any judge runs.** Using rater labels only (no judge output), report the average number of
+contested items per draw in each DICES set. If a set averages fewer than 30, its Q1 is reported as descriptive only.
+
+### Q2: Aegis replication of the pilot pattern
+Using the first three label slots (`labels_0`..`labels_2`) as the benchmark, split items into unanimous and 2-1 (items
+with a missing label among the three are left out and counted). Report the primary judge's agreement with the three-label
+majority on each group and the difference, with a 95% bootstrap interval over items. The pilot pattern "replicates" if
+agreement is lower on 2-1 items and the interval excludes 0. Results are also reported by `text_type`.
+On the items with 4 or 5 labels, slots 3-4 serve as a held-out panel of 1-2 labels. That check is exploratory only,
+because 1-2 labels is too few.
+Aegis has no annotator IDs, and its label slots are not the same person across items, so no per-rater model is fitted.
+
+### Q3: rater columns on HarmBench and JailbreakBench (labels only)
+Fit a binary Dawid-Skene model (EM, one sensitivity and one specificity per rater column, started from the majority vote)
+separately to HarmBench and JailbreakBench. Report each column's sensitivity and specificity with a 95% bootstrap
+interval over items (2,000 resamples). On the 23 HarmBench false alarms outside `chemical_biological`, report how many
+have a Dawid-Skene posterior P(harmful) below 0.5.
+Rule: "column 0 is stricter" only if its specificity interval lies wholly below both other columns' intervals.
+Caveats, fixed now: the columns may not be the same person across items, so this estimates column accuracy, not a
+person's; and three labels per item identify the model only weakly. Q3 is descriptive.
+
+### Q4 (descriptive): expert labels in DICES-350
+On DICES-350's contested items, report each judge's agreement with the expert `safety_gold` label next to the held-out
+majority's agreement with it. `safety_gold` is a second reference, not ground truth.
+
+## Handling and safety
+- Nobody new reads harmful text. I don't read item texts. The code writes item IDs, labels and judge verdicts only, and
+  never prints or saves item text.
+- Judges run in a private notebook on a free GPU service, or on my own computer. Data is loaded from the source at run
+  time and is not uploaded or re-shared as a dataset. If a service's rules don't allow this, I move the run, and the
+  rules here don't change.
+- Aegis's card says users must not try to identify people in the data, and that the data isn't for training dialogue
+  agents. This study does neither.
+- Release: the code (MIT), item IDs, the sampled rater draws, judge verdicts and all tables. No dataset text.
+
+## Changes from the withdrawn 14 Nov plan
+- The paid round on Prolific (53 HarmBench items x 5 raters) is withdrawn before any data. The HarmBench item list in
+  `study2/items.csv` is not used for new ratings.
+- Fresh raters are replaced by held-out raters in DICES-350 and DICES-990. The selection-bias fix from Yang Gao's review
+  (13 Nov) is kept: the labels that pick the items are never used to score the judge.
+- The pilot's unanimous v split comparison is replicated on Aegis 1.0.
+- The Dawid-Skene check moves from new rater IDs to the existing HarmBench and JailbreakBench rater columns, with the
+  column caveat above.
+- Kept: a plan committed on its own before any analysis, blind scoring rules fixed in advance, unanimous items as a
+  comparison group, the chemical/biological exclusion, and reporting inconclusive results as inconclusive.
+
+---
+
+# WITHDRAWN PLAN (14 Nov 2026, with Amendment 1): kept unchanged for the record. Not run. No data was collected.
+
 # Study 2 plan: fresh ratings on HarmBench's contested items
 
 Written 2026-11-14, before any Study 2 rating is collected. This file, `study2/select_items.py` and `study2/items.csv` are
